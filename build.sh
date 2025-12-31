@@ -48,7 +48,7 @@ printf -- "---- INSTALL BASE PACKAGES ----\n"
 cat << ! | chroot rootfs $RUN_SH
 apk update
 apk upgrade
-apk add unudhcpd busybox-extras evtest dtc-dev musl-dev
+apk add unudhcpd busybox-extras evtest dtc-dev musl-dev util-linux
 !
 
 umount -l rootfs/dev
@@ -67,7 +67,8 @@ cp rootfs/lib/ld-musl-aarch64.so.1 initramfs/lib
 cp rootfs/usr/lib/libfdt.so.1 initramfs/usr/lib
 ln -s ld-musl-aarch64.so.1 initramfs/lib/libc.musl-aarch64.so.1
 cp rootfs/bin/{busybox,busybox-extras} initramfs/bin
-cp rootfs/usr/bin/{evtest,unudhcpd} initramfs/bin
+cp rootfs/usr/bin/{evtest,unudhcpd,taskset} initramfs/bin
+cp ../copybins/perf initramfs/bin
 cp ../scripts/{init,init_functions.sh} initramfs
 install -m755 ../external/coremark/coremark.exe initramfs/bin/coremark
 install -m755 ../hoolocktest/hoolocktest initramfs/bin

@@ -2,3 +2,4 @@ initramfs.gz
 work
 hoolocktest/obj
 hoolocktest/hoolocktest
+copybins/perf

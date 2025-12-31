@@ -3,10 +3,9 @@ ROOT != pwd
 SRC = $(wildcard src/*.c)
 OBJDIR = $(ROOT)/obj
 OBJS = $(patsubst src/%,$(OBJDIR)/%,$(SRC:.c=.o)) $(PLATFORM_OBJS)
-LDFLAGS ?=
-LDFLAGS += -L$(ROOT)/../work/rootfs/usr/lib -fuse-ld=lld
-CFLAGS ?= -target aarch64-linux-musl -nostdlibinc -Os -I$(ROOT)/../work/rootfs/usr/include
-CFLAGS += -Wall -Wextra
+LDFLAGS ?= -fuse-ld=lld
+CFLAGS ?= -target aarch64-linux-musl -Os
+CFLAGS += -Wall -Wextra --sysroot="$(ROOT)/../work/rootfs"
 CC := clang
 LIBS = -lfdt
 
@@ -26,6 +25,6 @@ $(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
 
 $(OBJDIR)/%.o: src/%.c
-	$(CC) $(CFLAGS) $(INCLDIRS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: all dirs shellcode clean

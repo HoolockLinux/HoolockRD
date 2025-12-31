@@ -8,7 +8,7 @@ ROOTFS="https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/aarch64/alpine-mini
 ARCH="$(arch)"
 
 TARGET_CC="clang"
-TARGET_CFLAGS="-target aarch64-linux-musl -fuse-ld=lld -nostdlibinc -isystem ${SRCROOT}/work/rootfs/usr/include -L${SRCROOT}/work/rootfs/usr/lib"
+TARGET_CFLAGS="-target aarch64-linux-musl -fuse-ld=lld --sysroot=${SRCROOT}/work/rootfs"
 TARGET_STRIP="llvm-strip"
 
 if [ "$(id -u)" != "0" ]; then

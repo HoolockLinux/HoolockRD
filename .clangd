@@ -1,0 +1,27 @@
+---
+If:
+  PathMatch: [hoolocktest/src/.*\.c]
+CompileFlags:
+  Add: 
+    - --target=aarch64-linux-musl
+    - -std=c17
+    - -fvisibility=hidden
+    - -nostdlibinc
+    - -I../../work/rootfs/usr/include
+    - -Wall
+    - -Wextra
+    - -Wno-unused-includes
+    - -Oz
+    - -fuse-ld=lld
+
+---
+If:
+  PathMatch: [.*\.h]
+CompileFlags:
+  Add:
+    - -xc-header
+    - -std=c17
+    - -Wall
+    - -Wextra
+    - -Wno-unused-function
+    - -Werror=implicit-function-declaration

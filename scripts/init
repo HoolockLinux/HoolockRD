@@ -1,0 +1,42 @@
+#!/bin/busybox sh
+# shellcheck disable=SC1091
+
+# Export all variables so they're available in /init_2nd.sh
+set -a
+
+LOG_PREFIX="[HL-rd]"
+
+[ -e /etc/unudhcpd.conf ] && . /etc/unudhcpd.conf
+. ./init_functions.sh
+
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+/bin/busybox --install -s
+/bin/busybox-extras --install -s
+
+if [ "$hl_rd" = "" ]; then
+    hl_rd="shell"
+fi
+
+# Mount everything, set up logging, modules, mdev
+mount_proc_sys_dev
+setup_log
+
+setup_usb_network
+start_unudhcpd
+setup_mdev
+
+if echo "$hl_rd"| grep -q "test"; then
+    /bin/hoolocktest
+    if [ "$?" != "0" ]; then
+        printf "#################### TEST FAILED ####################\n"
+        debug_shell
+        while true; do sleep 255; done
+    fi
+fi
+
+if echo "$hl_rd"| grep -q "shell"; then
+    debug_shell
+    while true; do sleep 255; done
+fi
+
+reboot -f

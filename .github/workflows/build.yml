@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
+
+    - name: Install Packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static llvm lld clang
+
+    - name: Get Perf
+      run: curl -Lo copybins/perf https://github.com/HoolockLinux/HoolockRD/releases/download/perf/perf
+
+    - name: Build
+      run: sudo ./build.sh
+
+    - name: Upload
+      uses: actions/upload-artifact@v6
+      with:
+        path: initramfs.gz
+        name: initramfs.gz

@@ -74,18 +74,19 @@ int main(void)
         bail("gpiochip0 file does not exist");
     printf("gpiochip existence test OK\n");
 
-    if ((device_flags & DEVICE_FLAG_BUTTONS) &&
-        !file_exists("/dev/input/event0")) {
-        bail("input event file does not exist");
-    }
-    printf("Input event existence test OK\n");
+    if ((device_flags & DEVICE_FLAG_BUTTONS)) {
+        if (!file_exists("/dev/input/event0"))
+            bail("input event file does not exist");
 
-    if ((chip_id == 0x8015 || chip_id == 0x8012) &&
-        !file_exists("/sys/bus/platform/drivers/macsmc")) {
-        bail("macsmc event file does not exist");
+        printf("Input event existence test OK\n");
     }
-    printf("macsmc existence test OK\n");
 
+    if ((chip_id == 0x8015 || chip_id == 0x8012)) {
+        if (!file_exists("/sys/bus/platform/drivers/macsmc"))
+            bail("macsmc event file does not exist");
+
+        printf("macsmc existence test OK\n");
+    }
     time_t t = time(NULL);
     if (t < 1009814400) // 2002-01-01
         bail("rtc test failed (earlier than 2002)\n");

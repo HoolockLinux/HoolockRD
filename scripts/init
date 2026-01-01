@@ -39,4 +39,6 @@ if echo "$hl_rd"| grep -q "shell"; then
     while true; do sleep 255; done
 fi
 
+sleep 2; # wait a bit to output to all consoles
+
 reboot -f

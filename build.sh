@@ -62,7 +62,7 @@ make -C ../hoolocktest
 ${TARGET_STRIP} ../hoolocktest/hoolocktest
 
 mkdir initramfs
-mkdir -p initramfs/{sbin,bin,dev,lib,proc,sys,usr/{bin,sbin,lib},run,tmp}
+mkdir -p initramfs/{sbin,bin,dev,lib,proc,sys,usr/{bin,sbin,lib/hoolocktest},run,tmp}
 cp rootfs/lib/ld-musl-aarch64.so.1 initramfs/lib
 cp rootfs/usr/lib/libfdt.so.1 initramfs/usr/lib
 ln -s ld-musl-aarch64.so.1 initramfs/lib/libc.musl-aarch64.so.1
@@ -70,6 +70,7 @@ cp rootfs/bin/{busybox,busybox-extras} initramfs/bin
 cp rootfs/usr/bin/{evtest,unudhcpd,taskset} initramfs/bin
 cp ../copybins/perf initramfs/bin
 cp ../scripts/{init,init_functions.sh} initramfs
+cp ../hoolocktest/scripts/* initramfs/usr/lib/hoolocktest
 install -m755 ../external/coremark/coremark.exe initramfs/bin/coremark
 install -m755 ../hoolocktest/hoolocktest initramfs/bin
 chmod 755 initramfs/init

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+set -e
+
+. /usr/lib/hoolocktest/test_functions.sh
+
+require_cpmu_exists()
+{
+    require_dir_exists "/sys/bus/event_source/devices/apple_${1}_pmu"
+}
+
+case "$1" in
+    0x8960)
+         require_cpmu_exists "cyclone";
+        ;;
+    0x7000|0x7001)
+         require_cpmu_exists "typhoon";
+         ;;
+    0x8000|0x8001|0x8003)
+         require_cpmu_exists "twister";
+         ;;
+    0x8010|0x8011|0x8012)
+         require_cpmu_exists "fusion";
+         ;;
+    0x8015)
+         require_cpmu_exists "monsoon";
+         require_cpmu_exists "mistral";
+         ;;
+esac
+
+perf record -o perf.data &
+
+taskset -c 1 perf stat coremark &
+if [ "$1" = "0x8015" ]; then
+    taskset -c 4 perf stat coremark &
+fi
+
+if [ "$1" = "0x8015" ]; then
+    wait %2 %3
+else
+    wait %2
+fi
+
+kill -15 %1
+wait %1 || true
+
+exit 0

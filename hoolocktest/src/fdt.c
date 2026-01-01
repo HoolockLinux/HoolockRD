@@ -50,7 +50,8 @@ bool _hlt_fdt_match_compatible(void *fdt, int nodeoffset, const struct fdt_match
         if (retval)
             continue;
 
-        *match_data = match_table[i].data;
+        if (match_data)
+            *match_data = match_table[i].data;
         return true;
     }
     return false;

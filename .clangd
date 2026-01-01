@@ -13,6 +13,8 @@ CompileFlags:
     - -Wno-unused-includes
     - -Oz
     - -fuse-ld=lld
+    - -D_FILE_OFFSET_BITS=64
+    - -D_TIME_BITS=64
 
 ---
 If:

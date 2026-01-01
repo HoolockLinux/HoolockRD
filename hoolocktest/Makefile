@@ -4,7 +4,7 @@ SRC = $(wildcard src/*.c)
 OBJDIR = $(ROOT)/obj
 OBJS = $(patsubst src/%,$(OBJDIR)/%,$(SRC:.c=.o)) $(PLATFORM_OBJS)
 LDFLAGS ?= -fuse-ld=lld
-CFLAGS ?= -target aarch64-linux-musl -Os
+CFLAGS ?= -target aarch64-linux-musl -Os -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64
 CFLAGS += -Wall -Wextra --sysroot="$(ROOT)/../work/rootfs"
 CC := clang
 LIBS = -lfdt

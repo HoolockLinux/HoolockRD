@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+. /usr/lib/hoolocktest/test_functions.sh
+
+require_dir_exists "/config/usb_gadget/g1"
+require_dir_exists "/sys/bus/platform/drivers/dwc2"

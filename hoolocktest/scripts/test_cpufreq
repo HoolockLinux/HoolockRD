@@ -1,0 +1,48 @@
+#!/bin/sh
+
+set -e
+
+. /usr/lib/hoolocktest/test_functions.sh
+
+# When this script gets ran, the C code made sure all CPUs are online
+# $1 = cpid
+
+check_cpufreq_freq() {
+    sleep 0.1;
+    local cpuinfo_cur_freq="$(cat "$1/cpuinfo_cur_freq")"
+    local scaling_cur_freq="$(cat "$1/scaling_cur_freq")"
+    # when boost freq support is added,
+    # add a boost check here to allow mismatch freqs
+    if [ "$cpuinfo_cur_freq" != "$scaling_cur_freq" ]; then
+        error_exit "current and target cpu frequency mismatch: $cpuinfo_cur_freq "
+    fi
+}
+
+check_cpufreq_policy() {
+    # $1 = policy path /sys/devices/system/cpu/cpufreq/policy4
+    local backup_governor="$(cat "$1/scaling_governor")";
+    echo userspace > "$1"/scaling_governor;
+    check_cpufreq_freq "$1";
+
+    local avail_freqs="$(cat "$1/scaling_available_frequencies")";
+    for freq in $avail_freqs; do
+        echo $freq > "$1/scaling_setspeed";
+        check_cpufreq_freq "$1";
+    done
+    # reset governor
+    echo "$backup_governor" > "$1"/scaling_governor;
+}
+
+if ! [ -d "/sys/devices/system/cpu/cpufreq/policy0" ]; then
+    error_exit "cpufreq policy0 not found";
+fi
+
+check_cpufreq_policy "/sys/devices/system/cpu/cpufreq/policy0"
+
+if [ "$1" = "0x8015" ]; then
+    if ! [ -d "/sys/devices/system/cpu/cpufreq/policy4" ]; then
+        error_exit "cpufreq policy4 not found";
+    fi
+
+    check_cpufreq_policy "/sys/devices/system/cpu/cpufreq/policy4"
+fi

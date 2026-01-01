@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -e
+
+. /usr/lib/hoolocktest/test_functions.sh
+
+# DWI or PMIC?
+bl_dir="$(find /sys/class/backlight -name '20e2000*.backlight' -type l)"
+
+if [ "${bl_dir}" = "" ]; then
+    bl_dir="$(find /sys/class/backlight -name '20a110000.i2c:pmic@*:backlight@*' -type l)"
+fi
+
+if [ "${bl_dir}" = "" ]; then
+    error_exit "Could not find backlight device";
+fi
+
+actual_brightness="$(cat ${bl_dir}/actual_brightness)"
+brightness="$(cat ${bl_dir}/actual_brightness)"
+max_brightness="$(cat ${bl_dir}/max_brightness)"
+
+if [ "$actual_brightness" != "$brightness" ]; then
+    error_exit "unsupported max brightness"
+fi
+
+if [ "$actual_brightness" = "0" ]; then
+    error_exit "brightness is 0"
+fi
+
+test_brightness() {
+    echo "$1" > ${bl_dir}/brightness
+    sleep 1; # some screens are slow
+    test_actual_brightness="$(cat ${bl_dir}/actual_brightness)"
+    if [ "$test_actual_brightness" != "$1" ]; then
+        error_exit "failed to set brightness: expected $1, got $test_actual_brightness"
+    fi
+}
+
+if [ "$max_brightness" = "2047" ]; then
+    test_brightness 0
+    test_brightness 300
+    test_brightness 1000
+    test_brightness 2047
+elif [ "$max_brightness" = "255" ]; then
+    test_brightness 0
+    test_brightness 100
+    test_brightness 255
+else
+    error_exit "unsupported max brightness"
+fi
+
+# reset brightness
+echo "$brightness" > ${bl_dir}/brightness

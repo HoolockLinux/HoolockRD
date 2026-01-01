@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -e
+
+. /usr/lib/hoolocktest/test_functions.sh
+
+require_char_exists "/dev/nvme0";
+require_block_exists "/dev/nvme0n1";
+require_block_exists "/dev/nvme0n2";
+require_block_exists "/dev/nvme0n3";
+
+require_dir_exists "/sys/class/nvme/nvme0"
+
+printf "Checking nvme model: "
+cat /sys/class/nvme/nvme0/model | grep -q "APPLE SSD"
+printf "nvme serial: %s\n" "$(cat /sys/class/nvme/nvme0/serial)"
+
+blkid
+
+state="$(cat /sys/class/nvme/nvme0/state)"
+if [ "$state" != "live" ]; then
+    error_exit "nvme is not live (${1})";
+fi
+
+### FIXME !!! Causes NVME controller to DIE ###
+#echo 1 > /sys/class/nvme/nvme0/reset_controller
+
+exit 0;

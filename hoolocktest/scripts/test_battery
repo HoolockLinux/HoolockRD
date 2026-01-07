@@ -1,0 +1,56 @@
+#!/bin/sh
+
+set -e
+
+. /usr/lib/hoolocktest/test_functions.sh
+
+is_enabled="$(cat /sys/module/macsmc_power/parameters/enable_t8015)"
+
+if [ "$is_enabled" != "Y" ]; then
+    printf "macsmc_power.enable_t8015 not set.\nSkipping test for experimental battery support\n";
+    exit 0;
+fi
+
+prop_exists()
+{
+    if [ -f "/sys/class/power_supply/macsmc-battery/${1}" ]; then
+        return 0;
+    else
+        return 1;
+    fi
+}
+
+read_prop()
+{
+    printf "${1}: $(cat /sys/class/power_supply/macsmc-battery/${1})\n";
+}
+
+for a in capacity capacity_level charge_behaviour charge_counter charge_full charge_full_design charge_now current_now cycle_count energy_full energy_full_design energy_now power_now present scope serial_number status temp type voltage_max voltage_min voltage_now; do
+    if prop_exists "$a"; then
+        read_prop "$a";
+    else
+        error_exit "required battery property '$a' does not exist!";
+    fi
+done
+
+# optional properties
+if prop_exists "health"; then
+    read_prop "health"
+fi
+
+if prop_exists "voltage_max_design"; then
+    read_prop "voltage_max_design"
+fi
+
+if prop_exists "time_to_empty_now"; then
+    read_prop "time_to_empty_now"
+fi
+
+# AC Adapter
+if [ -f "/sys/class/power_supply/macsmc-ac/online" ]; then
+    printf "AC online status: $(cat /sys/class/power_supply/macsmc-ac/online)\n";
+else
+    error_exit "AC online status does not exist!";
+fi
+
+exit 0;

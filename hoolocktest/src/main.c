@@ -91,6 +91,13 @@ int main(void)
     if (t < 1009814400) // 2002-01-01
         bail("rtc test failed (earlier than 2002)\n");
 
+    if (chip_id == 0x8015) {
+        ret = runCommand((const char*[]){HLT_PATH("test_battery"), NULL});
+        if (ret)
+            bail("battery test failed\n");
+        printf("battery test OK\n");
+    }
+
     printf("HoolockLinux Test -- SUCCESS\n");
     printf(" ===== Ending HoolockTest ===== \n"); 
 

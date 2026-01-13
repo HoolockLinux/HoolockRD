@@ -4,7 +4,11 @@ set -e
 
 . /usr/lib/hoolocktest/test_functions.sh
 
-is_enabled="$(cat /sys/module/macsmc_power/parameters/enable_t8015)"
+is_enabled="Y"
+
+if [ -f "/sys/module/macsmc_power/parameters/enable_t8015" ]; then
+    is_enabled="$(cat /sys/module/macsmc_power/parameters/enable_t8015)";
+fi
 
 if [ "$is_enabled" != "Y" ]; then
     printf "macsmc_power.enable_t8015 not set.\nSkipping test for experimental battery support\n";
@@ -25,6 +29,11 @@ read_prop()
     printf "${1}: $(cat /sys/class/power_supply/macsmc-battery/${1})\n";
 }
 
+write_prop()
+{
+    echo "${2}" > "/sys/class/power_supply/macsmc-battery/${1}"
+}
+
 for a in capacity capacity_level charge_behaviour charge_counter charge_full charge_full_design charge_now current_now cycle_count energy_full energy_full_design energy_now power_now present scope serial_number status temp type voltage_max voltage_min voltage_now; do
     if prop_exists "$a"; then
         read_prop "$a";
@@ -40,6 +49,16 @@ fi
 
 if prop_exists "voltage_max_design"; then
     read_prop "voltage_max_design"
+fi
+
+if prop_exists "time_to_empty_now"; then
+    read_prop "time_to_empty_now"
+fi
+
+# these should exist together
+if prop_exists "charge_control_end_threshold"; then
+    write_prop "charge_control_start_threshold" 75;
+    write_prop "charge_control_end_threshold" 80;
 fi
 
 if prop_exists "time_to_empty_now"; then

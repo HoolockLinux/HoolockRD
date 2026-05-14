@@ -22,7 +22,9 @@ if [ "$state" != "live" ]; then
     error_exit "nvme is not live (${1})";
 fi
 
-### FIXME !!! Causes NVME controller to DIE ###
-#echo 1 > /sys/class/nvme/nvme0/reset_controller
+echo 1 > /sys/class/nvme/nvme0/reset_controller;
+echo "NVME Still okay?";
+[ $(cat /sys/class/nvme/nvme0/state) = "live" ];
+echo "NVME is Okay";
 
 exit 0;

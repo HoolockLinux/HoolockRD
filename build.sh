@@ -74,6 +74,7 @@ cp rootfs/usr/bin/{evtest,unudhcpd,taskset,sensors,gpioset,gpioget,gpiodetect,gp
 install -m755 ../copybins/perf initramfs-binpack/bin
 cp ../scripts/{init,init_functions.sh} initramfs
 cp ../hoolocktest/scripts/* initramfs-binpack/usr/lib/hoolocktest
+cp -a ../firmware initramfs/lib
 install -m755 ../external/coremark/coremark.exe initramfs-binpack/bin/coremark
 install -m755 ../hoolocktest/hoolocktest initramfs-binpack/bin
 chmod 755 initramfs/init

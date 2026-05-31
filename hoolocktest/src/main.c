@@ -101,6 +101,10 @@ int main(void)
         if (ret)
             bail("HWMON test failed\n");
         printf("HWMON test OK\n");
+
+        if (!file_exists("/sys/bus/platform/drivers/pmp-t8015/232300000.pmp"))
+            bail("pmp driver not correctly loaded or missing firmware");
+        printf("PMP check OK\n");
     }
 
     printf("HoolockLinux Test -- SUCCESS\n");

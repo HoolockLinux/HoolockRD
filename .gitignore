@@ -1,6 +1,7 @@
 initramfs.gz
 initramfs.xz
 work
+firmware
 hoolocktest/obj
 hoolocktest/hoolocktest
 copybins/perf
